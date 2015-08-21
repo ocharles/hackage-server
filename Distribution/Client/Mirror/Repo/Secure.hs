@@ -73,11 +73,16 @@ withSourceRepo verbosity httpLib uri cacheDir threshold keys callback = do
         logger msg = when (verbosity >= verbose) $
                        putStrLn $ Sec.pretty msg
 
+        repoOpts :: Sec.Remote.RepoOpts
+        repoOpts = Sec.Remote.defaultRepoOpts {
+            Sec.Remote.repoWantCompressedIndex    = True
+          , Sec.Remote.repoAllowAdditionalMirrors = False
+          }
+
     Sec.Remote.withRepository
       httpLib
       [uri]
-      Sec.Remote.AllowContentCompression
-      Sec.Remote.WantCompressedIndex
+      repoOpts
       cache
       Sec.hackageRepoLayout
       logger $ \rep ->

@@ -299,11 +299,7 @@ executable hackage-server
     cheapskate >= 0.1,
     blaze-html >= 0.7,
     xmlgen     >= 0.6,
-    -- TODO: hackage-security relies on network-uri. Not sure what the
-    -- reason behind the 'network-uri' build time flag is, but if it's
-    -- crucial that we may not rely on it, then we also need to make this
-    -- possibly in hackage-security, or else make security optional
-    hackage-security,
+    hackage-security >= 0.2,
     ed25519,
     SHA,
     binary
