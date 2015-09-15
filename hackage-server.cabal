@@ -299,7 +299,7 @@ executable hackage-server
     cheapskate >= 0.1,
     blaze-html >= 0.7,
     xmlgen     >= 0.6,
-    hackage-security >= 0.2,
+    hackage-security >= 0.4,
     ed25519,
     SHA,
     binary

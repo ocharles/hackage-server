@@ -14,6 +14,7 @@ import Control.Monad
 import Control.Monad.IO.Class
 import Control.Monad.Cont
 import Data.Maybe (fromJust, fromMaybe)
+import Data.Time (getCurrentTime)
 import Network.URI (URI)
 import System.Directory
 import System.FilePath
@@ -104,7 +105,8 @@ downloadIndex rep Sec.Cache{..} rootKeys threshold =
       _hasUpdates <- liftIO $ do
         requiresBootstrap <- Sec.requiresBootstrap rep
         when requiresBootstrap $ Sec.bootstrap rep rootKeys threshold
-        Sec.checkForUpdates rep Sec.CheckExpiry
+        now <- getCurrentTime
+        Sec.checkForUpdates rep (Just now)
       -- TODO: Is this hasUpdates values useful anywhere?
       readIndex (show rep) indexPath
   where
