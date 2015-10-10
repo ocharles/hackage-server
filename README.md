@@ -18,6 +18,51 @@ You'll need to do the following to get hackage-server's dependency `text-icu` to
     sudo apt-get update
     sudo apt-get install unzip libicu-dev
 
+## Setting up security infrastructure
+
+If `datafiles/` is your static files directory (containing, for instance,
+`datafiles/templates`), you will need to create a directory `datafiles/TUF`. Use
+the [hackage-repo-tool](http://hackage.haskell.org/package/hackage-repo-tool) to
+create private keys:
+
+    hackage-repo-tool create-keys --keys /path/to/keys
+
+Then copy over the timestamp and snapshot keys to the TUF directory:
+
+    cp /path/to/keys/timestamp/<id>.private datafiles/TUF/timestamp.private
+    cp /path/to/keys/snapshot/<id>.private  datafiles/TUF/snapshot.private
+
+Create root information:
+
+    hackage-repo-tool create-root --keys /path/to/keys -o datafiles/TUF/root.json
+
+And finally create a list of mirrors (this is necessary even if you don't have
+any mirrors):
+
+    hackage-repo-tool create-mirrors --keys /path/to/keys -o datafiles/TUF/mirrors.json
+
+The `create-mirrors` command takes a list of mirrors as additional arguments if
+you do want to list mirrors.
+
+At this point your server is good to go. In order for secure clients to
+bootstrap the root security metadata from your server, you will need to provide
+them with the public key IDs of your root keys; you can find these as the file
+names of the files created in `/path/to/keys/root` (as well as in the generated
+root.json under the `signed.roles.root.keyids`). An example `cabal` client
+configuration might look something like
+
+    remote-repo my-private-hackage
+      url: http://example.com:8080/
+      secure: True
+      root-keys: 18a11971b3491c697cb46e94141f50f7ee043ddc5bade200744b95543c53771f
+                 7b0e2516c2dd2501ca95b82f209fb8b769680ec7ce5aec4e0abab25600222791
+                 ed1e79078ce86a8e8dcc32358e10357e156eb42f95385c0c9a7d231e23867676
+      key-threshold: 2
+
+NOTE: The `hackage-repo-tool` is rather rudimentary at the moment. Key
+management will change before the official release of the Hackage Security
+project.
+
 ## Running
 
     cabal install -j --enable-tests
